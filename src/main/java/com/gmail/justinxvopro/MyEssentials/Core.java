@@ -26,14 +26,15 @@ import com.gmail.justinxvopro.MyEssentials.nms.CustomEntity;
 
 public class Core extends JavaPlugin {
 	public static Logger LOGGER;
-	private String version = "1.14";
+	private String version = "1.16";
 
 	@Override
 	public void onLoad() {
 		LOGGER = this.getLogger();
+
 		if (checkNMS(version)) {
-			CustomEntity.registerEntities();
 			this.getLogger().info("Registered Custom Entities");
+			CustomEntity.registerEntities();
 		} else {
 			this.getLogger().info("NMS not 1.14 Disabling Custom Entities");
 		}

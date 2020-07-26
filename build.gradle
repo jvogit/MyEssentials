@@ -16,5 +16,5 @@ repositories {
 }
 
 dependencies {
-    compile files("${projectDir}/libs/craftbukkit-1.14.1.jar")
+    compile files("${projectDir}/libs/craftbukkit-1.16.1.jar")
 }

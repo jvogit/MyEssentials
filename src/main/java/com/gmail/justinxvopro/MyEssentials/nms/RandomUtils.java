@@ -4,8 +4,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomUtils {
 
-	public static <T> T chooseRandomly(T... lT) {
-		return lT[ThreadLocalRandom.current().nextInt(lT.length)];
+	@SafeVarargs
+	public static <T> T chooseRandomly(T... l) {
+		return l[ThreadLocalRandom.current().nextInt(l.length)];
 	}
 
 	public static boolean chance(int chance) {

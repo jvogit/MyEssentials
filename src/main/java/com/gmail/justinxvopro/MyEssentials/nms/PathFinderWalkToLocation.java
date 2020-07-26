@@ -4,9 +4,10 @@ import java.util.function.Consumer;
 
 import org.bukkit.Location;
 
-import net.minecraft.server.v1_14_R1.EntityInsentient;
-import net.minecraft.server.v1_14_R1.PathEntity;
-import net.minecraft.server.v1_14_R1.PathfinderGoal;
+import net.minecraft.server.v1_16_R1.BlockPosition;
+import net.minecraft.server.v1_16_R1.EntityInsentient;
+import net.minecraft.server.v1_16_R1.PathEntity;
+import net.minecraft.server.v1_16_R1.PathfinderGoal;
 
 public class PathFinderWalkToLocation extends PathfinderGoal {
 	public EntityInsentient entity;
@@ -37,14 +38,15 @@ public class PathFinderWalkToLocation extends PathfinderGoal {
 
 	@Override
 	public void c() {
-		PathEntity path = entity.getNavigation().a(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+		PathEntity path = entity.getNavigation().a(new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()),
+				0); // 0 val ?
 		arrivalCheck();
 		entity.getNavigation().a(path, 0.5d);
 	}
 
 	private void arrivalCheck() {
-		double diffX = (loc.getX() - entity.locX);
-		double diffZ = (loc.getZ() - entity.locZ);
+		double diffX = (loc.getX() - entity.locX());
+		double diffZ = (loc.getZ() - entity.locZ());
 
 		if (diffX < 1 && diffX > -1 && diffZ < 1 && diffZ > -1) {
 			if (!arrived) {

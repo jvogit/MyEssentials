@@ -7,17 +7,18 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import net.minecraft.server.v1_14_R1.ChatComponentText;
-import net.minecraft.server.v1_14_R1.DamageSource;
-import net.minecraft.server.v1_14_R1.EntityHuman;
-import net.minecraft.server.v1_14_R1.EntityLiving;
-import net.minecraft.server.v1_14_R1.EntityTypes;
-import net.minecraft.server.v1_14_R1.EntityVillager;
-import net.minecraft.server.v1_14_R1.EnumHand;
-import net.minecraft.server.v1_14_R1.PathfinderGoalSelector;
-import net.minecraft.server.v1_14_R1.SoundEffect;
-import net.minecraft.server.v1_14_R1.SoundEffects;
-import net.minecraft.server.v1_14_R1.World;
+import net.minecraft.server.v1_16_R1.ChatComponentText;
+import net.minecraft.server.v1_16_R1.DamageSource;
+import net.minecraft.server.v1_16_R1.EntityHuman;
+import net.minecraft.server.v1_16_R1.EntityLiving;
+import net.minecraft.server.v1_16_R1.EntityTypes;
+import net.minecraft.server.v1_16_R1.EntityVillager;
+import net.minecraft.server.v1_16_R1.EnumHand;
+import net.minecraft.server.v1_16_R1.EnumInteractionResult;
+import net.minecraft.server.v1_16_R1.PathfinderGoalSelector;
+import net.minecraft.server.v1_16_R1.SoundEffect;
+import net.minecraft.server.v1_16_R1.SoundEffects;
+import net.minecraft.server.v1_16_R1.World;
 
 public class DeliveryVillager extends EntityVillager {
 	private boolean done = false;
@@ -53,7 +54,7 @@ public class DeliveryVillager extends EntityVillager {
 	}
 
 	@Override
-	public boolean a(EntityHuman human, EnumHand hand) {
+	public EnumInteractionResult b(EntityHuman human, EnumHand hand) {
 		if (!done) {
 			done = true;
 			Player player = (Player) human.getBukkitEntity();
@@ -65,11 +66,12 @@ public class DeliveryVillager extends EntityVillager {
 			player.getInventory().addItem(new ItemStack(foodType, RandomUtils.chooseRandomly(1, 2, 3)));
 			this.clearPathfinders();
 			this.goalSelector.a(0, new PathFinderWalkToLocation(this,
-					new Location(player.getWorld(), this.locX + 10, this.locY, this.locZ + 10), (pathFinder) -> {
+					new Location(player.getWorld(), this.locX() + 10, this.locY(), this.locZ() + 10), (pathFinder) -> {
 						this.clearPathfinders();
 					}));
 		}
-		return true;
+		
+		return EnumInteractionResult.SUCCESS;
 	}
 
 }

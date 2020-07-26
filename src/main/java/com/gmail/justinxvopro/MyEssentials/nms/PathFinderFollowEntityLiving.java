@@ -2,10 +2,11 @@ package com.gmail.justinxvopro.MyEssentials.nms;
 
 import java.util.function.Consumer;
 
-import net.minecraft.server.v1_14_R1.EntityInsentient;
-import net.minecraft.server.v1_14_R1.EntityLiving;
-import net.minecraft.server.v1_14_R1.PathEntity;
-import net.minecraft.server.v1_14_R1.PathfinderGoal;
+import net.minecraft.server.v1_16_R1.BlockPosition;
+import net.minecraft.server.v1_16_R1.EntityInsentient;
+import net.minecraft.server.v1_16_R1.EntityLiving;
+import net.minecraft.server.v1_16_R1.PathEntity;
+import net.minecraft.server.v1_16_R1.PathfinderGoal;
 
 public class PathFinderFollowEntityLiving extends PathfinderGoal {
 	public EntityInsentient entity;
@@ -36,14 +37,14 @@ public class PathFinderFollowEntityLiving extends PathfinderGoal {
 
 	@Override
 	public void c() {
-		PathEntity path = entity.getNavigation().a(target.locX, target.locY, target.locZ);
+		PathEntity path = entity.getNavigation().a(new BlockPosition(target.locX(), target.locY(), target.locZ()), 0); // o val ?
 		arrivalCheck();
 		entity.getNavigation().a(path, 0.5d);
 	}
 
 	private void arrivalCheck() {
-		double diffX = (target.locX - entity.locX);
-		double diffZ = (target.locZ - entity.locZ);
+		double diffX = (target.locX() - entity.locX());
+		double diffZ = (target.locZ() - entity.locZ());
 
 		if (diffX < 1 && diffX > -1 && diffZ < 1 && diffZ > -1) {
 			if (!arrived) {

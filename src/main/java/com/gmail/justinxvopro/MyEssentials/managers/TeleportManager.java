@@ -39,11 +39,11 @@ public class TeleportManager implements Listener {
 		if (!tpahere) {
 			requestor.sendMessage("A request has been sent to " + to.getName());
 			to.sendMessage(requestor.getName()
-					+ Core.colored(" wants to teleport to you!\nType in &a/tpaccept &for &c/tpdeny"));
+					+ Core.colored(" requests to be in your presence!\nType in &a/tpaccept &for &c/tpdeny"));
 		} else {
 			requestor.sendMessage("A request has been sent to " + to.getName());
 			to.sendMessage(requestor.getName()
-					+ Core.colored(" wants you to teleport to them!\nType in &a/tpaccept &for &c/tpdeny"));
+					+ Core.colored(" requests your presence!\nType in &a/tpaccept &for &c/tpdeny"));
 		}
 	}
 

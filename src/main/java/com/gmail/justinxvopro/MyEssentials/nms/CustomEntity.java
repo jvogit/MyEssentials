@@ -1,72 +1,66 @@
 package com.gmail.justinxvopro.MyEssentials.nms;
 
-import java.util.Map;
+import java.lang.reflect.Constructor;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
 
-import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.types.Type;
-
-import net.minecraft.server.v1_14_R1.BlockPosition;
-import net.minecraft.server.v1_14_R1.DataConverterRegistry;
-import net.minecraft.server.v1_14_R1.DataConverterTypes;
-import net.minecraft.server.v1_14_R1.Entity;
-import net.minecraft.server.v1_14_R1.EntityTypes;
-import net.minecraft.server.v1_14_R1.EntityTypes.b;
-import net.minecraft.server.v1_14_R1.EnumCreatureType;
-import net.minecraft.server.v1_14_R1.IRegistry;
-import net.minecraft.server.v1_14_R1.SharedConstants;
-import net.minecraft.server.v1_14_R1.WorldServer;
+import net.minecraft.server.v1_16_R1.BlockPosition;
+import net.minecraft.server.v1_16_R1.Entity;
+import net.minecraft.server.v1_16_R1.EntityTypes;
+import net.minecraft.server.v1_16_R1.EntityTypes.Builder;
+import net.minecraft.server.v1_16_R1.EntityTypes.b;
+import net.minecraft.server.v1_16_R1.EnumCreatureType;
+import net.minecraft.server.v1_16_R1.WorldServer;
 
 public enum CustomEntity {
-	DELIVERY_VILLAGER("delivery_villager", "villager", DeliveryVillager::new),
-	RIDEABLE_POLAR_BEAR("rideable_polar_bear", "polar_bear", RideablePolarBear::new);
+	DELIVERY_VILLAGER("delivery_villager", EnumCreatureType.CREATURE, DeliveryVillager::new),
+	RIDEABLE_POLAR_BEAR("rideable_polar_bear", EnumCreatureType.CREATURE, RideablePolarBear::new);
 
-	private b<? extends Entity> b;
-	private String customName, typeName;
+	private String customName; 
+	private EnumCreatureType typeName;
+	private b<?> b;
 	private EntityTypes<? extends Entity> custom_type;
 
-	private <T extends Entity> CustomEntity(String customName, String typeName, b<T> b) {
+	private <T extends Entity> CustomEntity(String customName, EnumCreatureType typeName, b<T> b) {
 		this.customName = customName;
-		this.typeName = typeName;
 		this.b = b;
-	}
-
-	private void register() {
-		this.custom_type = CustomEntity.register(customName, typeName, b);
 	}
 
 	public String getCustomName() {
 		return customName;
 	}
 
-	public String getTypeName() {
-		return typeName;
-	}
-
 	public Entity spawn(Location loc) {
 		WorldServer w = ((CraftWorld) loc.getWorld()).getHandle();
-		Entity entity = this.custom_type.b(w, null, null, null, new BlockPosition(loc.getX(), loc.getY(), loc.getZ()),
+		Entity entity = this.custom_type.spawnCreature(w, null, null, null, new BlockPosition(loc.getX(), loc.getY(), loc.getZ()),
 				null, false, false);
-
-		w.addEntity(entity);
+		
 		return entity;
 	}
-
-	public static void registerEntities() {
-		Stream.of(CustomEntity.values()).forEach(CustomEntity::register);
+	
+	public void inject() throws Exception {
+		this.custom_type = injectNewEntity(typeName, customName, b);
 	}
-
-	public static <T extends Entity> EntityTypes<T> register(String customName, String type, b<T> b) {
-		Map<String, Type<?>> types = (Map<String, Type<?>>) DataConverterRegistry.a()
-				.getSchema(DataFixUtils.makeKey(SharedConstants.a().getWorldVersion()))
-				.findChoiceType(DataConverterTypes.ENTITY).types();
-		types.put("minecraft:" + customName, types.get("minecraft:" + type));
-
-		EntityTypes.a<T> a = EntityTypes.a.a(b, EnumCreatureType.CREATURE);
-
-		return IRegistry.a(IRegistry.ENTITY_TYPE, customName, a.a(customName));
+	
+	public static void registerEntities() {
+		Stream.of(values()).forEach(t -> {
+			try {
+				t.inject();
+				Bukkit.getLogger().log(Level.INFO, "Registered " + t.getCustomName());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+	}
+	
+	private static <T extends Entity> EntityTypes<T> injectNewEntity(EnumCreatureType type, String name, b<T> b) throws Exception {
+		Constructor<Builder> constructor = EntityTypes.Builder.class.getDeclaredConstructor(b.class, EnumCreatureType.class);
+		constructor.setAccessible(true);
+		return constructor.newInstance(b, type).a(name);
 	}
 }

@@ -21,7 +21,7 @@ public class LuckyFishingEventCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender arg0, Command arg1, String arg2, String[] arg3) {
 		event_task.cancel();
-		LuckyFishingEventTask new_task = new LuckyFishingEventTask();
+		LuckyFishingEventTask new_task = new LuckyFishingEventTask(true);
 		new_task.run();
 		event_task = new_task.schedule(core);
 
