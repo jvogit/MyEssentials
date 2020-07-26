@@ -1,0 +1,57 @@
+name: MyEssentials
+version: 1.0.0
+main: com.gmail.justinxvopro.MyEssentials.Core
+api-version: 1.14
+commands:
+  tpa:
+    description: Request to teleport
+    usage: /tpa PlayerName
+  tpahere:
+    description: Request to teleport to you
+    usage: /tpahere PlayerName
+    aliases: tphere
+  tpaccept:
+    description: Accept a teleport request
+    usage: /tpaccept PlayerName
+  tpdeny:
+    description: Deny a teleport request
+    usage: /tpdeny
+  back:
+    description: Go back to previous location
+    usage: /back
+  home:
+    description: Go to your bed spawn location
+    usage: /home
+  nophantom:
+    description: No more fucking phantoms
+    permission: myessentials.operator
+  cartaddon:
+    description: Cart bonuses
+    permission: myessentials.operator
+  package:
+    description: Package inbound
+    permission: myessentials.operator
+  dimension:
+    description: Teleport to different dimensions
+    usage: /dimension <name> <Player>
+  storage:
+    description: enderchest
+    aliases: enderchest
+  smite:
+    description: smite somebody
+    permission: myessentials.operator
+    usage: /smite <Player>
+  disarm:
+    description: disarm sombody
+    permission: myessentials.operator
+    usage: /disarm <Player>
+  passive:
+    description: passive
+    usage: /passive <Player>
+  luckyfishingevent:
+    description: lucky fishing
+    permission: myessentials.operator
+permissions:
+  myessentials.operator:
+    description: operator level commands
+    default: op
