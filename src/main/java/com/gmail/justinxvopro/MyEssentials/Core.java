@@ -10,6 +10,7 @@ import com.gmail.justinxvopro.MyEssentials.commands.BackCommand;
 import com.gmail.justinxvopro.MyEssentials.commands.DimensionCommand;
 import com.gmail.justinxvopro.MyEssentials.commands.DisablePhantom;
 import com.gmail.justinxvopro.MyEssentials.commands.DisarmCommand;
+import com.gmail.justinxvopro.MyEssentials.commands.HardmodeCommand;
 import com.gmail.justinxvopro.MyEssentials.commands.HomeCommand;
 import com.gmail.justinxvopro.MyEssentials.commands.LuckyFishingEventCommand;
 import com.gmail.justinxvopro.MyEssentials.commands.PackageCommand;
@@ -53,7 +54,7 @@ public class Core extends JavaPlugin {
 		this.getCommand("tpaccept").setExecutor(new TPAcceptCommand());
 		this.getCommand("tpdeny").setExecutor(new TPDenyCommand());
 		this.getCommand("tpahere").setExecutor(new TPAHereCommand());
-		this.getCommand("home").setExecutor(new HomeCommand());
+		this.getCommand("home").setExecutor(new HomeCommand(this));
 		this.getCommand("back").setExecutor(new BackCommand());
 		this.getCommand("cartaddon").setExecutor(new MinecartManager(this));
 		this.getCommand("dimension").setExecutor(new DimensionCommand(this));
@@ -62,6 +63,7 @@ public class Core extends JavaPlugin {
 		this.getCommand("disarm").setExecutor(new DisarmCommand(this));
 		this.getCommand("passive").setExecutor(new PassiveCommand(this));
 		this.getCommand("luckyfishingevent").setExecutor(new LuckyFishingEventCommand(this));
+		this.getCommand("hardmode").setExecutor(new HardmodeCommand(this));
 		this.registerNMSCommands(version);
 		this.getServer().getPluginManager().registerEvents(new TeleportManager(), this);
 	}

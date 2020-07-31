@@ -51,6 +51,9 @@ commands:
   luckyfishingevent:
     description: lucky fishing
     permission: myessentials.operator
+  hardmode:
+    description: take back the night
+    permission: myessentials.operator
 permissions:
   myessentials.operator:
     description: operator level commands
