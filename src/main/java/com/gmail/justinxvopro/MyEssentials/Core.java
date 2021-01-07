@@ -27,7 +27,7 @@ import com.gmail.justinxvopro.MyEssentials.nms.CustomEntity;
 
 public class Core extends JavaPlugin {
 	public static Logger LOGGER;
-	private String version = "1.16";
+	private String version = "1.16.1";
 
 	@Override
 	public void onLoad() {

@@ -16,7 +16,7 @@ import com.gmail.justinxvopro.MyEssentials.nms.RandomUtils;
 
 public class HardmodeCommand implements CommandExecutor, Listener {
 	private Core core;
-	private boolean enabled = true;
+	private boolean enabled = false;
 	private String[] death_messages = {
 		"%s ruined it for everyone.",
 		"%s fucked up.",

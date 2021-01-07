@@ -1,4 +1,4 @@
 dimensions:
   - 'world'
   - 'old'
-hard-mode: true
+hard-mode: false
