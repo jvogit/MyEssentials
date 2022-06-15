@@ -1,25 +1,22 @@
 package com.gmail.justinxvopro.MyEssentials.nms;
 
-import java.util.function.Consumer;
-
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
 import org.bukkit.Location;
 
-import net.minecraft.server.v1_16_R1.BlockPosition;
-import net.minecraft.server.v1_16_R1.EntityInsentient;
-import net.minecraft.server.v1_16_R1.PathEntity;
-import net.minecraft.server.v1_16_R1.PathfinderGoal;
+import java.util.function.Consumer;
 
-public class PathFinderWalkToLocation extends PathfinderGoal {
-	public EntityInsentient entity;
+public class PathFinderWalkToLocation extends Goal {
+	public Mob entity;
 	public Location loc;
 	public boolean arrived;
 	private Consumer<PathFinderWalkToLocation> consumerArrival;
 
-	public PathFinderWalkToLocation(EntityInsentient entity, Location loc) {
+	public PathFinderWalkToLocation(Mob entity, Location loc) {
 		this(entity, loc, null);
 	}
 
-	public PathFinderWalkToLocation(EntityInsentient entity, Location loc,
+	public PathFinderWalkToLocation(Mob entity, Location loc,
 			Consumer<PathFinderWalkToLocation> consumerArrival) {
 		this.entity = entity;
 		this.loc = loc;
@@ -27,26 +24,19 @@ public class PathFinderWalkToLocation extends PathfinderGoal {
 	}
 
 	@Override
-	public boolean a() {
+	public boolean canUse() {
 		return true;
 	}
 
 	@Override
-	public boolean b() {
-		return false;
-	}
-
-	@Override
-	public void c() {
-		PathEntity path = entity.getNavigation().a(new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()),
-				0); // 0 val ?
+	public void tick() {
 		arrivalCheck();
-		entity.getNavigation().a(path, 0.5d);
+		entity.getNavigation().moveTo(loc.getX(), loc.getY(), loc.getZ(), 0.5d);
 	}
 
 	private void arrivalCheck() {
-		double diffX = (loc.getX() - entity.locX());
-		double diffZ = (loc.getZ() - entity.locZ());
+		double diffX = (loc.getX() - entity.getX());
+		double diffZ = (loc.getZ() - entity.getZ());
 
 		if (diffX < 1 && diffX > -1 && diffZ < 1 && diffZ > -1) {
 			if (!arrived) {

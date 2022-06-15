@@ -1,66 +1,48 @@
 package com.gmail.justinxvopro.MyEssentials.nms;
 
-import java.lang.reflect.Constructor;
-import java.util.logging.Level;
-import java.util.stream.Stream;
+import com.gmail.justinxvopro.MyEssentials.Core;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.npc.Villager;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
+public class CustomEntity<T extends Entity> {
+	public static final CustomEntity<DeliveryVillager> DELIVERY_VILLAGER = new CustomEntity<>("delivery_villager", EntityType.Builder.of(DeliveryVillager::new, MobCategory.MISC));
 
-import net.minecraft.server.v1_16_R1.BlockPosition;
-import net.minecraft.server.v1_16_R1.Entity;
-import net.minecraft.server.v1_16_R1.EntityTypes;
-import net.minecraft.server.v1_16_R1.EntityTypes.Builder;
-import net.minecraft.server.v1_16_R1.EntityTypes.b;
-import net.minecraft.server.v1_16_R1.EnumCreatureType;
-import net.minecraft.server.v1_16_R1.WorldServer;
-
-public enum CustomEntity {
-	DELIVERY_VILLAGER("delivery_villager", EnumCreatureType.CREATURE, DeliveryVillager::new),
-	RIDEABLE_POLAR_BEAR("rideable_polar_bear", EnumCreatureType.CREATURE, RideablePolarBear::new);
-
-	private String customName; 
-	private EnumCreatureType typeName;
-	private b<?> b;
-	private EntityTypes<? extends Entity> custom_type;
-
-	private <T extends Entity> CustomEntity(String customName, EnumCreatureType typeName, b<T> b) {
-		this.customName = customName;
-		this.b = b;
+	private final String id;
+	private final EntityType.Builder builder;
+	private EntityType<T> type;
+	private CustomEntity(String id, EntityType.Builder builder) {
+		this.id = id;
+		this.builder = builder;
 	}
 
-	public String getCustomName() {
-		return customName;
+	public EntityType<T> getType() {
+		return this.type;
 	}
 
-	public Entity spawn(Location loc) {
-		WorldServer w = ((CraftWorld) loc.getWorld()).getHandle();
-		Entity entity = this.custom_type.spawnCreature(w, null, null, null, new BlockPosition(loc.getX(), loc.getY(), loc.getZ()),
-				null, false, false);
-		
-		return entity;
+	private void register() {
+		type = register(id, builder);
 	}
-	
-	public void inject() throws Exception {
-		this.custom_type = injectNewEntity(typeName, customName, b);
-	}
-	
+
 	public static void registerEntities() {
-		Stream.of(values()).forEach(t -> {
-			try {
-				t.inject();
-				Bukkit.getLogger().log(Level.INFO, "Registered " + t.getCustomName());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
+		ReflectUtils.unfreezeRegistry();
+
+		DELIVERY_VILLAGER.register();
+
+		Registry.ENTITY_TYPE.freeze();
 	}
-	
-	private static <T extends Entity> EntityTypes<T> injectNewEntity(EnumCreatureType type, String name, b<T> b) throws Exception {
-		Constructor<Builder> constructor = EntityTypes.Builder.class.getDeclaredConstructor(b.class, EnumCreatureType.class);
-		constructor.setAccessible(true);
-		return constructor.newInstance(b, type).a(name);
+
+	private static <T extends Entity> EntityType<T> register(String id, EntityType.Builder type) {
+		ResourceLocation key = new ResourceLocation(id);
+		if (Registry.ENTITY_TYPE.containsKey(key)) {
+			Core.LOGGER.info(id + " is already registered!");
+			return (EntityType) Registry.ENTITY_TYPE.get(key);
+		}
+
+		Core.LOGGER.info("Registered " + id);
+		return (EntityType) Registry.register(Registry.ENTITY_TYPE, id, (EntityType<T>) type.build(id));
 	}
 }

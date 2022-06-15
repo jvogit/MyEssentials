@@ -1,77 +1,72 @@
 package com.gmail.justinxvopro.MyEssentials.nms;
 
-import java.util.Set;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.server.v1_16_R1.ChatComponentText;
-import net.minecraft.server.v1_16_R1.DamageSource;
-import net.minecraft.server.v1_16_R1.EntityHuman;
-import net.minecraft.server.v1_16_R1.EntityLiving;
-import net.minecraft.server.v1_16_R1.EntityTypes;
-import net.minecraft.server.v1_16_R1.EntityVillager;
-import net.minecraft.server.v1_16_R1.EnumHand;
-import net.minecraft.server.v1_16_R1.EnumInteractionResult;
-import net.minecraft.server.v1_16_R1.PathfinderGoalSelector;
-import net.minecraft.server.v1_16_R1.SoundEffect;
-import net.minecraft.server.v1_16_R1.SoundEffects;
-import net.minecraft.server.v1_16_R1.World;
-
-public class DeliveryVillager extends EntityVillager {
+public class DeliveryVillager extends Villager {
 	private boolean done = false;
 
-	public DeliveryVillager(EntityTypes<? extends EntityVillager> entitytypes, World world) {
-		super(EntityTypes.VILLAGER, world);
+	public DeliveryVillager(EntityType<? extends Villager> entitytypes, Level world) {
+		super(EntityType.VILLAGER, world);
 
-		this.setCustomName(new ChatComponentText(RandomUtils.chooseRandomly("UberEats", "DoorDash")));
+		this.setCustomName(Component.literal(RandomUtils.chooseRandomly("UberEats", "DoorDash", "GrubHub")));
 		this.setCustomNameVisible(true);
 	}
 
 	public void clearPathfinders() {
-		ReflectUtils.getPrivateField("d", PathfinderGoalSelector.class, this.goalSelector, Set.class).clear();
-		ReflectUtils.getPrivateField("f", PathfinderGoalSelector.class, this.goalSelector, Set.class).clear();
+		this.goalSelector.removeAllGoals();
 	}
 
-	public void deliverTo(EntityLiving target) {
-		this.goalSelector.a(0, new PathFinderFollowEntityLiving(this, target, (pathfinder) -> {
-			if (pathfinder.target instanceof EntityHuman) {
-				((EntityHuman) pathfinder.target).getBukkitEntity().sendMessage("Your food has arrived!");
+	public void deliverTo(Entity target) {
+		this.goalSelector.addGoal(0, new PathFinderFollowEntityLiving(this, target, (pathfinder) -> {
+			if (pathfinder.target instanceof Player) {
+				((Player) pathfinder.target).getBukkitEntity().sendMessage("Your food has arrived!");
 			}
 		}));
 	}
 
 	@Override
-	protected SoundEffect getSoundHurt(DamageSource source) {
-		return SoundEffects.BLOCK_ANVIL_PLACE;
+	protected SoundEvent getHurtSound(DamageSource source) {
+		return SoundEvents.ANVIL_PLACE;
 	}
 
 	@Override
-	protected SoundEffect getSoundDeath() {
-		return SoundEffects.BLOCK_ANVIL_DESTROY;
+	public SoundEvent getDeathSound() {
+		return SoundEvents.ANVIL_DESTROY;
 	}
 
 	@Override
-	public EnumInteractionResult b(EntityHuman human, EnumHand hand) {
+	public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
 		if (!done) {
 			done = true;
-			Player player = (Player) human.getBukkitEntity();
+			org.bukkit.entity.Player bukkitPlayer = (org.bukkit.entity.Player) player.getBukkitEntity();
 
-			player.sendMessage("You have received food!");
+			bukkitPlayer.sendMessage("You have received food!");
 			Material foodType = RandomUtils.chooseRandomly(Material.COOKED_BEEF, Material.COOKED_CHICKEN,
 					Material.COOKED_MUTTON, Material.COOKED_PORKCHOP, Material.COOKED_RABBIT, Material.MUSHROOM_STEW,
 					Material.BREAD);
-			player.getInventory().addItem(new ItemStack(foodType, RandomUtils.chooseRandomly(1, 2, 3)));
+			bukkitPlayer.getInventory().addItem(new ItemStack(foodType, RandomUtils.chooseRandomly(1, 2, 3)));
 			this.clearPathfinders();
-			this.goalSelector.a(0, new PathFinderWalkToLocation(this,
-					new Location(player.getWorld(), this.locX() + 10, this.locY(), this.locZ() + 10), (pathFinder) -> {
+			this.goalSelector.addGoal(0, new PathFinderWalkToLocation(this,
+					new Location(bukkitPlayer.getWorld(), this.getX() + 10, this.getY(), this.getZ() + 10), (pathFinder) -> {
 						this.clearPathfinders();
 					}));
 		}
 		
-		return EnumInteractionResult.SUCCESS;
+		return InteractionResult.SUCCESS;
 	}
 
 }

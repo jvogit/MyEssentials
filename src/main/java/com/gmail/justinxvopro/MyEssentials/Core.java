@@ -27,7 +27,7 @@ import com.gmail.justinxvopro.MyEssentials.nms.CustomEntity;
 
 public class Core extends JavaPlugin {
 	public static Logger LOGGER;
-	private String version = "1.16.1";
+	private String version = "1.19";
 
 	@Override
 	public void onLoad() {
@@ -37,7 +37,7 @@ public class Core extends JavaPlugin {
 			this.getLogger().info("Registered Custom Entities");
 			CustomEntity.registerEntities();
 		} else {
-			this.getLogger().info("NMS not 1.14 Disabling Custom Entities");
+			this.getLogger().info("NMS not 1.19 Disabling Custom Entities");
 		}
 	}
 
@@ -78,7 +78,7 @@ public class Core extends JavaPlugin {
 
 	private void registerNMSCommands(String version) {
 		if (!checkNMS(version)) {
-			LOGGER.info("NMS not 1.14 Disabling NMS Commands. . .");
+			LOGGER.info("NMS not 1.19 Disabling NMS Commands. . .");
 			return;
 		}
 		this.getCommand("package").setExecutor(new PackageCommand());

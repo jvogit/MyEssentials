@@ -11,3 +11,6 @@ libs
 .classpath
 .project
 .gitattributes
+
+#idea
+.idea/

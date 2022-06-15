@@ -1,50 +1,42 @@
 package com.gmail.justinxvopro.MyEssentials.nms;
 
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
+
 import java.util.function.Consumer;
 
-import net.minecraft.server.v1_16_R1.BlockPosition;
-import net.minecraft.server.v1_16_R1.EntityInsentient;
-import net.minecraft.server.v1_16_R1.EntityLiving;
-import net.minecraft.server.v1_16_R1.PathEntity;
-import net.minecraft.server.v1_16_R1.PathfinderGoal;
-
-public class PathFinderFollowEntityLiving extends PathfinderGoal {
-	public EntityInsentient entity;
-	public EntityLiving target;
+public class PathFinderFollowEntityLiving extends Goal {
+	public Mob entity;
+	public Entity target;
 	private boolean arrived = false;
 	private Consumer<PathFinderFollowEntityLiving> consumerArrival;
 
-	public PathFinderFollowEntityLiving(EntityInsentient entity, EntityLiving target) {
-		this(entity, target, null);
+	public PathFinderFollowEntityLiving(Mob entity, Entity target) {
+		this(entity, target, (x) -> {});
 	}
 
-	public PathFinderFollowEntityLiving(EntityInsentient entity, EntityLiving target,
-			Consumer<PathFinderFollowEntityLiving> consumerArrival) {
+	public PathFinderFollowEntityLiving(Mob entity, Entity target,
+										Consumer<PathFinderFollowEntityLiving> consumerArrival) {
 		this.entity = entity;
 		this.target = target;
 		this.consumerArrival = consumerArrival;
 	}
 
 	@Override
-	public boolean a() {
+	public boolean canUse() {
 		return true;
 	}
 
 	@Override
-	public boolean b() {
-		return false;
-	}
-
-	@Override
-	public void c() {
-		PathEntity path = entity.getNavigation().a(new BlockPosition(target.locX(), target.locY(), target.locZ()), 0); // o val ?
+	public void tick() {
+		this.entity.getNavigation().moveTo(this.target, 0.5d);
 		arrivalCheck();
-		entity.getNavigation().a(path, 0.5d);
 	}
 
 	private void arrivalCheck() {
-		double diffX = (target.locX() - entity.locX());
-		double diffZ = (target.locZ() - entity.locZ());
+		double diffX = (target.getX() - entity.getX());
+		double diffZ = (target.getZ() - entity.getZ());
 
 		if (diffX < 1 && diffX > -1 && diffZ < 1 && diffZ > -1) {
 			if (!arrived) {
@@ -56,5 +48,4 @@ public class PathFinderFollowEntityLiving extends PathfinderGoal {
 			arrived = false;
 		}
 	}
-
 }
