@@ -41,7 +41,8 @@ public class LocationManager implements Listener {
 				Core.LOGGER.info(key + " adding location " + loc);
 				try {
 					saveWorldLocation(UUID.fromString(key), (Location) loc);
-				} catch (IllegalArgumentException exception) {
+				} catch (Exception exception) {
+					// location is invalid. ex: world may be gone!
 					Core.LOGGER.warning(
 							"Received a location, but it is an invalid! Skipping. . ." + exception.getMessage());
 				}
