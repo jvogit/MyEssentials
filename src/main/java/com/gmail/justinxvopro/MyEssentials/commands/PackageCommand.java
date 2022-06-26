@@ -20,35 +20,33 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class PackageCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender s, Command c, String raw, String[] args) {
-		if (!(s instanceof Player p)) {
-			return false;
-		}
-
-		p.sendMessage("Sent!");
-
 		if (args.length >= 1) {
 			Player target = Bukkit.getPlayer(args[0]);
 			if (target != null) {
-				p.sendMessage("Sent to " + target.getName());
-				p = target;
+				s.sendMessage("Sent to " + target.getName());
+				target.sendMessage("You have a delivery coming from " + s.getName());
+				this.spawnDeliveryVillage(findSuitableLocation(target.getLocation(), 5, 10, 5), target);
 			} else {
-				p.sendMessage("Player offline!");
-				return false;
+				s.sendMessage("Player offline!");
 			}
+		} else if (s instanceof Player p) {
+			s.sendMessage("You have a delivery coming!");
+			this.spawnDeliveryVillage(findSuitableLocation(p.getLocation(), 5, 10, 5), p);
 		}
 
-		this.spawnDeliveryVillage(findSuitableLocation(p.getLocation(), 5, 10, 5), p);
-		
 		return true;
 	}
 
 	private Location findSuitableLocation(Location origin, double minRadius, double maxRadius, double yRadius) {
 		List<Location> cands = new ArrayList<>();
+		cands.add(origin);
+
 		for (double i = origin.getBlockX() - maxRadius; i <= origin.getBlockX() + maxRadius; i++) {
 			for (double j = origin.getBlockY() - yRadius; j <= origin.getBlockY() + yRadius; j++) {
 				for (double k = origin.getBlockZ() - maxRadius; k <= origin.getBlockZ() + maxRadius; k++) {
@@ -60,9 +58,7 @@ public class PackageCommand implements CommandExecutor {
 			}
 		}
 
-		Collections.shuffle(cands);
-
-		return cands.get(0);
+		return cands.get(ThreadLocalRandom.current().nextInt(cands.size()));
 	}
 
 	private void spawnDeliveryVillage(Location at, Player to) {

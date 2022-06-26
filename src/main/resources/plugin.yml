@@ -54,6 +54,8 @@ commands:
   hardmode:
     description: take back the night
     permission: myessentials.operator
+  pickup:
+    description: yeet
 permissions:
   myessentials.operator:
     description: operator level commands

@@ -1,0 +1,111 @@
+package com.gmail.justinxvopro.MyEssentials.commands;
+
+import com.gmail.justinxvopro.MyEssentials.Core;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.util.Vector;
+import org.spigotmc.event.entity.EntityDismountEvent;
+import org.spigotmc.event.entity.EntityMountEvent;
+
+import java.util.HashSet;
+import java.util.UUID;
+
+public class PickUpCommand implements CommandExecutor, Listener {
+
+    private Core core;
+    private PassiveCommand passiveCommand;
+    private HashSet<UUID> active = new HashSet<UUID>();
+    private static final String PICK_UP_METADATA_KEY = UUID.randomUUID().toString();
+
+    public PickUpCommand(Core core, PassiveCommand passiveCommand) {
+        this.core = core;
+        this.passiveCommand = passiveCommand;
+        this.core.getServer().getPluginManager().registerEvents(this, this.core);
+    }
+
+    @Override
+    public boolean onCommand(CommandSender cs, Command cmd, String alias, String[] args) {
+        if (!(cs instanceof Player player)) return true;
+
+        if (active.contains(player.getUniqueId())) {
+            active.remove(player.getUniqueId());
+            player.sendMessage("Pick up someone is disabled!");
+
+            return true;
+        }
+
+        active.add(player.getUniqueId());
+        player.sendMessage("Right click to pick up someone!");
+
+        return true;
+    }
+
+    @EventHandler
+    public void onRightClickEntity(PlayerInteractEntityEvent event) {
+        if (!active.contains(event.getPlayer().getUniqueId())) return;
+
+        Player player = event.getPlayer();
+
+        if (event.getRightClicked() instanceof LivingEntity || event.getRightClicked() instanceof Vehicle) {
+            player.setMetadata(PICK_UP_METADATA_KEY, new FixedMetadataValue(core, ""));
+            player.addPassenger(event.getRightClicked());
+            event.setCancelled(true);
+            active.remove(player.getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onPassengerDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof LivingEntity entity) {
+            if (entity.getVehicle() instanceof Player) event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onMount(EntityMountEvent event) {
+        if (event.getEntity() instanceof Player player && active.contains(player.getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onMount(EntityDismountEvent event) {
+        if (event.getDismounted() instanceof Player dismountedPlayer && dismountedPlayer.hasMetadata(PICK_UP_METADATA_KEY)) {
+            if (event.getEntity() instanceof Player player && !passiveCommand.isInPassiveMode(player)) {
+                event.setCancelled(true);
+            }
+
+            dismountedPlayer.removeMetadata(PICK_UP_METADATA_KEY, core);
+        }
+    }
+
+    @EventHandler
+    public void onRightClick(PlayerInteractEvent event) {
+        if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) return;
+
+        Player player = event.getPlayer();
+        var passengers = player.getPassengers();
+        player.removeMetadata(PICK_UP_METADATA_KEY, core);
+
+        if (player.eject()) {
+            passengers.forEach(passenger -> {
+                passenger.sendMessage("Yeet");
+                passenger.setVelocity(player.getEyeLocation().getDirection().multiply(1));
+            });
+            event.setCancelled(true);
+        }
+    }
+}

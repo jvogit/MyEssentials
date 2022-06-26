@@ -40,6 +40,10 @@ public class PassiveCommand implements CommandExecutor, Listener {
 		return true;
 	}
 
+	public boolean isInPassiveMode(Player p) {
+		return passive.contains(p.getUniqueId());
+	}
+
 	@EventHandler
 	public void onPlayerDamage(EntityDamageByEntityEvent event) {
 		if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {

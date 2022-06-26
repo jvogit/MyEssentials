@@ -2,6 +2,7 @@ package com.gmail.justinxvopro.MyEssentials;
 
 import java.util.logging.Logger;
 
+import com.gmail.justinxvopro.MyEssentials.commands.PickUpCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -61,9 +62,11 @@ public class Core extends JavaPlugin {
 		this.getCommand("storage").setExecutor(new StorageCommand());
 		this.getCommand("smite").setExecutor(new SmiteCommand(this));
 		this.getCommand("disarm").setExecutor(new DisarmCommand(this));
-		this.getCommand("passive").setExecutor(new PassiveCommand(this));
+		var passiveCommand = new PassiveCommand(this);
+		this.getCommand("passive").setExecutor(passiveCommand);
 		this.getCommand("luckyfishingevent").setExecutor(new LuckyFishingEventCommand(this));
 		this.getCommand("hardmode").setExecutor(new HardmodeCommand(this));
+		this.getCommand("pickup").setExecutor(new PickUpCommand(this, passiveCommand));
 		this.registerNMSCommands(version);
 		this.getServer().getPluginManager().registerEvents(new TeleportManager(), this);
 	}
