@@ -15,8 +15,15 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import com.gmail.justinxvopro.MyEssentials.Core;
 
 public class TeleportManager implements Listener {
+
+	private final Core core;
 	private static Map<Player, Location> lastLocation = new HashMap<>();
 	private static Map<Player, TeleportRequestInfo> request = new HashMap<>();
+
+	public TeleportManager(final Core core) {
+		this.core = core;
+		this.core.getServer().getPluginManager().registerEvents(this, this.core);
+	}
 
 	@EventHandler
 	public void onTeleport(PlayerTeleportEvent event) {

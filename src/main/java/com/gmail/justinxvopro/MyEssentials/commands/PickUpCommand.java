@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
@@ -54,7 +55,7 @@ public class PickUpCommand implements CommandExecutor, Listener {
     }
 
     @EventHandler
-    public void onRightClickEntity(PlayerInteractEntityEvent event) {
+    public void onRightClickEntity(final PlayerInteractEntityEvent event) {
         if (!active.contains(event.getPlayer().getUniqueId())) return;
 
         Player player = event.getPlayer();
@@ -68,44 +69,57 @@ public class PickUpCommand implements CommandExecutor, Listener {
     }
 
     @EventHandler
-    public void onPassengerDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof LivingEntity entity) {
-            if (entity.getVehicle() instanceof Player) event.setCancelled(true);
-        }
+    public void onPassengerDamage(final EntityDamageEvent event) {
+        if (event.getEntity().getVehicle() instanceof Player) event.setCancelled(true);
     }
 
     @EventHandler
-    public void onMount(EntityMountEvent event) {
+    public void onMount(final EntityMountEvent event) {
         if (event.getEntity() instanceof Player player && active.contains(player.getUniqueId())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onMount(EntityDismountEvent event) {
+    public void onDismount(final EntityDismountEvent event) {
         if (event.getDismounted() instanceof Player dismountedPlayer && dismountedPlayer.hasMetadata(PICK_UP_METADATA_KEY)) {
             if (event.getEntity() instanceof Player player && !passiveCommand.isInPassiveMode(player)) {
                 event.setCancelled(true);
+                return;
             }
 
             dismountedPlayer.removeMetadata(PICK_UP_METADATA_KEY, core);
         }
     }
 
-    @EventHandler
-    public void onRightClick(PlayerInteractEvent event) {
-        if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) return;
-
-        Player player = event.getPlayer();
+    private boolean throwPassengers(final Player player) {
         var passengers = player.getPassengers();
-        player.removeMetadata(PICK_UP_METADATA_KEY, core);
-
-        if (player.eject()) {
+        var ejected = player.eject();
+        if (ejected) {
+            player.removeMetadata(PICK_UP_METADATA_KEY, core);
             passengers.forEach(passenger -> {
                 passenger.sendMessage("Yeet");
                 passenger.setVelocity(player.getEyeLocation().getDirection().multiply(1));
             });
-            event.setCancelled(true);
+        }
+
+        return ejected;
+    }
+
+    @EventHandler
+    public void onThrowInteract(final PlayerInteractEvent event) {
+        if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK
+                && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        Player player = event.getPlayer();
+
+        if (throwPassengers(player)) event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onThrowDamageEntity(final EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player player && player.getPassengers().contains(event.getEntity())) {
+            if (throwPassengers(player)) event.setCancelled(true);
         }
     }
 }

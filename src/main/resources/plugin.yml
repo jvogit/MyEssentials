@@ -56,6 +56,11 @@ commands:
     permission: myessentials.operator
   pickup:
     description: yeet
+  sit:
+    description: sit down boi
+  optrident:
+    description: op trident
+    permission: myessentials.operator
 permissions:
   myessentials.operator:
     description: operator level commands

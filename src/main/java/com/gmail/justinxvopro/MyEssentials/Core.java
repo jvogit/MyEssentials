@@ -2,7 +2,10 @@ package com.gmail.justinxvopro.MyEssentials;
 
 import java.util.logging.Logger;
 
+import com.gmail.justinxvopro.MyEssentials.commands.OpTridentCommand;
 import com.gmail.justinxvopro.MyEssentials.commands.PickUpCommand;
+import com.gmail.justinxvopro.MyEssentials.commands.SitCommand;
+import com.gmail.justinxvopro.MyEssentials.managers.ExplosionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -51,6 +54,8 @@ public class Core extends JavaPlugin {
 		} else {
 			this.getLogger().info("Certain Commands disabled");
 		}
+
+		// set up command executors
 		this.getCommand("tpa").setExecutor(new TPACommand());
 		this.getCommand("tpaccept").setExecutor(new TPAcceptCommand());
 		this.getCommand("tpdeny").setExecutor(new TPDenyCommand());
@@ -67,8 +72,13 @@ public class Core extends JavaPlugin {
 		this.getCommand("luckyfishingevent").setExecutor(new LuckyFishingEventCommand(this));
 		this.getCommand("hardmode").setExecutor(new HardmodeCommand(this));
 		this.getCommand("pickup").setExecutor(new PickUpCommand(this, passiveCommand));
+		this.getCommand("sit").setExecutor(new SitCommand(this));
+		this.getCommand("optrident").setExecutor(new OpTridentCommand(this));
 		this.registerNMSCommands(version);
-		this.getServer().getPluginManager().registerEvents(new TeleportManager(), this);
+
+		// set up managers
+		new TeleportManager(this);
+		new ExplosionManager(this);
 	}
 
 	public static String colored(String s) {
