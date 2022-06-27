@@ -6,6 +6,7 @@ import com.gmail.justinxvopro.MyEssentials.commands.OpTridentCommand;
 import com.gmail.justinxvopro.MyEssentials.commands.PickUpCommand;
 import com.gmail.justinxvopro.MyEssentials.commands.SitCommand;
 import com.gmail.justinxvopro.MyEssentials.managers.ExplosionManager;
+import com.gmail.justinxvopro.MyEssentials.managers.ItemFrameInvisibleManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -79,6 +80,7 @@ public class Core extends JavaPlugin {
 		// set up managers
 		new TeleportManager(this);
 		new ExplosionManager(this);
+		new ItemFrameInvisibleManager(this);
 	}
 
 	public static String colored(String s) {
