@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Bed;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.command.Command;
@@ -39,11 +40,7 @@ public class SitCommand implements CommandExecutor, Listener {
     private boolean isValidSitLocation(final Player player) {
         var playerLocationBlock = player.getLocation().getBlock();
 
-        if (playerLocationBlock.getBlockData() instanceof Stairs || playerLocationBlock.getBlockData() instanceof Slab) {
-            return true;
-        }
-
-        return playerLocationBlock.getRelative(BlockFace.DOWN).isSolid();
+        return playerLocationBlock.isSolid() || playerLocationBlock.getRelative(BlockFace.DOWN).isSolid();
     }
 
     private Location getSitLocation(final Player player) {
@@ -53,9 +50,16 @@ public class SitCommand implements CommandExecutor, Listener {
         var playerLocationBlockDown = playerLocationBlock.getRelative(BlockFace.DOWN);
 
         // if player is standing on a half slab/ standing on stair's ledge
-        if (playerLocationBlock.getBlockData() instanceof Stairs || playerLocationBlock.getBlockData() instanceof Slab) {
+        if (playerLocationBlock.getBlockData() instanceof Stairs ||
+                playerLocationBlock.getBlockData() instanceof Slab ||
+                playerLocationBlock.getBlockData() instanceof Bed) {
 
             return playerLocationBlock.getLocation().add(0.5, -0.5, 0.5).setDirection(player.getLocation().getDirection());
+        }
+
+        // chest, bed, any other block slightly shorter that is solid...
+        if (playerLocationBlock.isSolid()) {
+            return playerLocationBlock.getLocation().add(0.5, 0.1, 0.5).setDirection(player.getLocation().getDirection());
         }
 
         // if player is directly standing on stairs at the top
