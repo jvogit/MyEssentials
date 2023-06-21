@@ -8,21 +8,21 @@
 
 plugins {
     `java-library`
-    id("io.papermc.paperweight.userdev") version "1.3.7"
-    id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
+    id("io.papermc.paperweight.userdev") version "1.5.5"
+    id("xyz.jpenilla.run-paper") version "2.1.0" // Adds runServer and runMojangMappedServer tasks for testing
 }
 
 group = "com.gmail.justinxvopro"
-version = "1.1.1"
+version = "1.1.2"
 description = "MyEssentials"
 
-dependencies {
-    paperDevBundle("1.19-R0.1-SNAPSHOT")
-    // paperweightDevBundle("com.example.paperfork", "1.19-R0.1-SNAPSHOT")
+java {
+  // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
+  toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
 
-    // You will need to manually specify the full dependency if using the groovy gradle dsl
-    // (paperDevBundle and paperweightDevBundle functions do not work in groovy)
-    // paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19-R0.1-SNAPSHOT")
+dependencies {
+    paperDevBundle("1.20-R0.1-SNAPSHOT")
 }
 
 tasks {

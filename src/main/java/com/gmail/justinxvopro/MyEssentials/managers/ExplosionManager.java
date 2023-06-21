@@ -2,6 +2,7 @@ package com.gmail.justinxvopro.MyEssentials.managers;
 
 import com.gmail.justinxvopro.MyEssentials.Core;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,11 +22,13 @@ public class ExplosionManager implements Listener {
 
     private void handleExplosionPhysics(final List<Block> blockList, final Location origin) {
         final var world = origin.getWorld();
-        blockList.forEach(block -> {
-            var fallingBlock = world.spawnFallingBlock(block.getLocation(), block.getBlockData());
-            var dir = block.getLocation().toVector().subtract(origin.toVector()).normalize();
-            fallingBlock.setVelocity(dir.multiply(1.5f));
-        });
+        blockList.stream()
+                .filter(block -> block.getType() != Material.TNT)
+                .forEach(block -> {
+                    var fallingBlock = world.spawnFallingBlock(block.getLocation(), block.getBlockData());
+                    var dir = block.getLocation().toVector().subtract(origin.toVector()).normalize();
+                    fallingBlock.setVelocity(dir.multiply(1.5f));
+                });
     }
 
     @EventHandler

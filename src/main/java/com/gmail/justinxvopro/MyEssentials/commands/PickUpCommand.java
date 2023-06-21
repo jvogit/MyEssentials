@@ -1,6 +1,7 @@
 package com.gmail.justinxvopro.MyEssentials.commands;
 
 import com.gmail.justinxvopro.MyEssentials.Core;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -8,6 +9,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -94,9 +96,9 @@ public class PickUpCommand implements CommandExecutor, Listener {
 
     private boolean throwPassengers(final Player player) {
         var passengers = player.getPassengers();
+        player.removeMetadata(PICK_UP_METADATA_KEY, core);
         var ejected = player.eject();
         if (ejected) {
-            player.removeMetadata(PICK_UP_METADATA_KEY, core);
             passengers.forEach(passenger -> {
                 passenger.sendMessage("Yeet");
                 passenger.setVelocity(player.getEyeLocation().getDirection().multiply(1));

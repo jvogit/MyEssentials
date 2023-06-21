@@ -30,15 +30,6 @@ public class TeleportManager implements Listener {
 		TeleportCause cause = event.getCause();
 		if (TeleportCause.PLUGIN == cause || TeleportCause.COMMAND == cause) {
 			lastLocation.put(event.getPlayer(), event.getFrom());
-			if (event.getPlayer().getVehicle() != null) {
-				event.setCancelled(true);
-				Vehicle vehicle = (Vehicle) event.getPlayer().getVehicle();
-				vehicle.eject();
-				event.getPlayer().leaveVehicle();
-				vehicle.teleport(event.getTo());
-				event.getPlayer().teleport(event.getTo(), TeleportCause.UNKNOWN);
-				vehicle.addPassenger(event.getPlayer());
-			}
 		}
 	}
 

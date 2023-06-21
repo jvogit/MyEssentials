@@ -23,7 +23,7 @@ import com.gmail.justinxvopro.MyEssentials.Core;
 
 public class MinecartManager implements Listener, CommandExecutor {
 
-	private static boolean ENABLE = true;
+	private static boolean ENABLE = false;
 
 	public MinecartManager(Core core) {
 		Bukkit.getServer().getPluginManager().registerEvents(this, core);

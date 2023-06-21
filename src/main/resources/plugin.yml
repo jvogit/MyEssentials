@@ -1,7 +1,7 @@
 name: MyEssentials
-version: 1.1.1
+version: 1.1.2
 main: com.gmail.justinxvopro.MyEssentials.Core
-api-version: 1.19
+api-version: 1.20
 commands:
   tpa:
     description: Request to teleport

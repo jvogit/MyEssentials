@@ -3,7 +3,6 @@ package com.gmail.justinxvopro.MyEssentials.commands;
 import com.gmail.justinxvopro.MyEssentials.Core;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Bed;
 import org.bukkit.block.data.type.Slab;
@@ -12,7 +11,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -106,8 +104,10 @@ public class SitCommand implements CommandExecutor, Listener {
 
     @EventHandler
     public void onDismount(EntityDismountEvent event) {
-        if (event.getDismounted().hasMetadata(SIT_METADATA_TAG)) event.getDismounted().remove();
-        Bukkit.getScheduler().runTaskLater(this.core, () -> event.getEntity().setVelocity(new Vector(0, 0.5, 0)), 1L);
+        if (event.getDismounted().hasMetadata(SIT_METADATA_TAG)) {
+            event.getDismounted().remove();
+            Bukkit.getScheduler().runTaskLater(this.core, () -> event.getEntity().setVelocity(new Vector(0, 0.5, 0)), 1L);
+        }
     }
 
     @EventHandler
