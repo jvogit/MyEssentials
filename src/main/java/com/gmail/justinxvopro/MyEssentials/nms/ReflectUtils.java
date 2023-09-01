@@ -1,12 +1,12 @@
 package com.gmail.justinxvopro.MyEssentials.nms;
 
-import net.minecraft.core.Holder;
-import net.minecraft.core.MappedRegistry;
-import net.minecraft.core.Registry;
-import net.minecraft.world.entity.EntityType;
-
 import java.lang.reflect.Field;
 import java.util.IdentityHashMap;
+
+import net.minecraft.core.Holder;
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.EntityType;
 
 public final class ReflectUtils {
 
@@ -16,10 +16,10 @@ public final class ReflectUtils {
 		try {
 			Field intrusiveHolderCache = registryClass.getDeclaredField("m");
 			intrusiveHolderCache.setAccessible(true);
-			intrusiveHolderCache.set(Registry.ENTITY_TYPE, new IdentityHashMap<EntityType<?>, Holder.Reference<EntityType<?>>>());
+			intrusiveHolderCache.set(BuiltInRegistries.ENTITY_TYPE, new IdentityHashMap<EntityType<?>, Holder.Reference<EntityType<?>>>());
 			Field frozen = registryClass.getDeclaredField("l");
 			frozen.setAccessible(true);
-			frozen.set(Registry.ENTITY_TYPE, false);
+			frozen.set(BuiltInRegistries.ENTITY_TYPE, false);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 			return;

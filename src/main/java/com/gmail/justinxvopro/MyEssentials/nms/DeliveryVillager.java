@@ -27,7 +27,7 @@ public class DeliveryVillager extends Villager {
 	}
 
 	public void clearPathfinders() {
-		this.goalSelector.removeAllGoals();
+		this.goalSelector.removeAllGoals(x -> true);
 	}
 
 	public void deliverTo(Entity target) {

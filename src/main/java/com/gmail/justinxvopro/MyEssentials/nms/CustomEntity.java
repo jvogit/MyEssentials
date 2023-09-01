@@ -1,12 +1,13 @@
 package com.gmail.justinxvopro.MyEssentials.nms;
 
 import com.gmail.justinxvopro.MyEssentials.Core;
+
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.npc.Villager;
 
 public class CustomEntity<T extends Entity> {
 	public static final CustomEntity<DeliveryVillager> DELIVERY_VILLAGER = new CustomEntity<>("delivery_villager", EntityType.Builder.of(DeliveryVillager::new, MobCategory.MISC));
@@ -32,17 +33,17 @@ public class CustomEntity<T extends Entity> {
 
 		DELIVERY_VILLAGER.register();
 
-		Registry.ENTITY_TYPE.freeze();
+		BuiltInRegistries.ENTITY_TYPE.freeze();
 	}
 
 	private static <T extends Entity> EntityType<T> register(String id, EntityType.Builder type) {
 		ResourceLocation key = new ResourceLocation(id);
-		if (Registry.ENTITY_TYPE.containsKey(key)) {
+		if (BuiltInRegistries.ENTITY_TYPE.containsKey(key)) {
 			Core.LOGGER.info(id + " is already registered!");
-			return (EntityType) Registry.ENTITY_TYPE.get(key);
+			return (EntityType) BuiltInRegistries.ENTITY_TYPE.get(key);
 		}
 
 		Core.LOGGER.info("Registered " + id);
-		return (EntityType) Registry.register(Registry.ENTITY_TYPE, id, (EntityType<T>) type.build(id));
+		return (EntityType) Registry.register(BuiltInRegistries.ENTITY_TYPE, id, (EntityType<T>) type.build(id));
 	}
 }
