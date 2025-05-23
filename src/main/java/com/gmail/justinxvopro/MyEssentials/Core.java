@@ -1,13 +1,10 @@
 package com.gmail.justinxvopro.MyEssentials;
 
-import java.util.logging.Logger;
-
 import com.gmail.justinxvopro.MyEssentials.commands.OpTridentCommand;
 import com.gmail.justinxvopro.MyEssentials.commands.PickUpCommand;
 import com.gmail.justinxvopro.MyEssentials.commands.SitCommand;
 import com.gmail.justinxvopro.MyEssentials.managers.ExplosionManager;
 import com.gmail.justinxvopro.MyEssentials.managers.ItemFrameInvisibleManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,33 +25,22 @@ import com.gmail.justinxvopro.MyEssentials.commands.TPAcceptCommand;
 import com.gmail.justinxvopro.MyEssentials.commands.TPDenyCommand;
 import com.gmail.justinxvopro.MyEssentials.managers.MinecartManager;
 import com.gmail.justinxvopro.MyEssentials.managers.TeleportManager;
-import com.gmail.justinxvopro.MyEssentials.nms.CustomEntity;
+
+import io.papermc.paper.ServerBuildInfo;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 
 public class Core extends JavaPlugin {
-	public static Logger LOGGER;
-	private String version = "1.20";
+	public static ComponentLogger LOGGER;
+	public static final String VERSION = "1.21";
 
 	@Override
 	public void onLoad() {
-		LOGGER = this.getLogger();
-
-		if (checkNMS(version)) {
-			this.getLogger().info("Registered Custom Entities");
-			CustomEntity.registerEntities();
-		} else {
-			this.getLogger().info(String.format("NMS not %s Disabling Custom Entities", version));
-		}
+		LOGGER = getComponentLogger();
 	}
 
 	@Override
 	public void onEnable() {
 		this.saveDefaultConfig();
-		if (!Bukkit.getVersion().contains("1.12")) {
-			this.getCommand("nophantom").setExecutor(new DisablePhantom(this));
-			this.getServer().getPluginManager().registerEvents(new SilkTouchSpawnerListener(), this);
-		} else {
-			this.getLogger().info("Certain Commands disabled");
-		}
 
 		// set up command executors
 		this.getCommand("tpa").setExecutor(new TPACommand());
@@ -75,12 +61,14 @@ public class Core extends JavaPlugin {
 		this.getCommand("pickup").setExecutor(new PickUpCommand(this, passiveCommand));
 		this.getCommand("sit").setExecutor(new SitCommand(this));
 		this.getCommand("optrident").setExecutor(new OpTridentCommand(this));
-		this.registerNMSCommands(version);
+		this.getCommand("nophantom").setExecutor(new DisablePhantom(this));
+		this.registerNMSCommands(VERSION);
 
 		// set up managers
 		new TeleportManager(this);
 		new ExplosionManager(this);
 		new ItemFrameInvisibleManager(this);
+		this.getServer().getPluginManager().registerEvents(new SilkTouchSpawnerListener(), this);
 	}
 
 	public static String colored(String s) {
@@ -88,7 +76,7 @@ public class Core extends JavaPlugin {
 	}
 
 	public static boolean checkNMS(String version) {
-		return Bukkit.getVersion().contains(version);
+		return ServerBuildInfo.buildInfo().minecraftVersionId().contains(version);
 	}
 
 	private void registerNMSCommands(String version) {

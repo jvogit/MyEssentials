@@ -30,18 +30,17 @@ public class PathFinderFollowEntityLiving extends Goal {
 
 	@Override
 	public void tick() {
-		this.entity.getNavigation().moveTo(this.target, 0.5d);
+		if (entity.getNavigation().isDone())
+		{
+			this.entity.getNavigation().moveTo(this.target, 0.5d);
+		}
 		arrivalCheck();
 	}
 
 	private void arrivalCheck() {
-		double diffX = (target.getX() - entity.getX());
-		double diffZ = (target.getZ() - entity.getZ());
-
-		if (diffX < 1 && diffX > -1 && diffZ < 1 && diffZ > -1) {
+		if (this.entity.position().subtract(target.position()).horizontalDistanceSqr() < 4.f) {
 			if (!arrived) {
-				if (this.consumerArrival != null)
-					this.consumerArrival.accept(this);
+				this.consumerArrival.accept(this);
 				arrived = true;
 			}
 		} else {

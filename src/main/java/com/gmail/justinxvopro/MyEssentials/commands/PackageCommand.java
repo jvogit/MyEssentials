@@ -9,15 +9,12 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-import com.gmail.justinxvopro.MyEssentials.nms.CustomEntity;
 import com.gmail.justinxvopro.MyEssentials.nms.DeliveryVillager;
-
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.MobSpawnType;
 
 public class PackageCommand implements CommandExecutor {
 
@@ -28,13 +25,13 @@ public class PackageCommand implements CommandExecutor {
 			if (target != null) {
 				s.sendMessage("Sent to " + target.getName());
 				target.sendMessage("You have a delivery coming from " + s.getName());
-				this.spawnDeliveryVillage(findSuitableLocation(target.getLocation(), 5, 10, 5), target);
+				this.spawnDeliveryVillage(findSuitableLocation(target.getLocation(), 10, 20, 5), target);
 			} else {
 				s.sendMessage("Player offline!");
 			}
 		} else if (s instanceof Player p) {
 			s.sendMessage("You have a delivery coming!");
-			this.spawnDeliveryVillage(findSuitableLocation(p.getLocation(), 5, 10, 5), p);
+			this.spawnDeliveryVillage(findSuitableLocation(p.getLocation(), 10, 20, 5), p);
 		}
 
 		return true;
@@ -60,10 +57,10 @@ public class PackageCommand implements CommandExecutor {
 
 	private void spawnDeliveryVillage(Location at, Player to) {
 		var level = ((CraftWorld) at.getWorld()).getHandle();
-		DeliveryVillager b = (DeliveryVillager) CustomEntity.DELIVERY_VILLAGER.getType()
-				.spawn(level, new BlockPos(at.getBlockX(), at.getBlockY(), at.getBlockZ()), MobSpawnType.COMMAND);
+		DeliveryVillager b = new DeliveryVillager(level);
+		b.setPos(at.getBlockX(), at.getBlockY(), at.getBlockZ());
+		level.addFreshEntity(b, SpawnReason.CUSTOM);
 		b.deliverTo(((CraftPlayer) to).getHandle());
-
 		to.sendMessage("Your food is coming!");
 	}
 

@@ -43,7 +43,7 @@ public class LocationManager implements Listener {
 					saveWorldLocation(UUID.fromString(key), (Location) loc);
 				} catch (Exception exception) {
 					// location is invalid. ex: world may be gone!
-					Core.LOGGER.warning(
+					Core.LOGGER.warn(
 							"Received a location, but it is an invalid! Skipping. . ." + exception.getMessage());
 				}
 			});
@@ -80,7 +80,7 @@ public class LocationManager implements Listener {
 			this.FILE_CONFIGURATION.save(this.LOCATIONS_FILE);
 		} catch (IOException e) {
 			e.printStackTrace();
-			Core.LOGGER.severe("Unable to save location to memory: " + p.getUniqueId() + " " + l.toString() + " "
+			Core.LOGGER.error("Unable to save location to memory: " + p.getUniqueId() + " " + l.toString() + " "
 					+ e.getMessage());
 		}
 	}

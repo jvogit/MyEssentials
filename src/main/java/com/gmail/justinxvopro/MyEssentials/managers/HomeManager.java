@@ -35,7 +35,7 @@ public class HomeManager implements Listener {
 			try {
 				saveHomeLocation(UUID.fromString(key), (Location) loc, false);
 			} catch (IllegalArgumentException exception) {
-				Core.LOGGER.warning(
+				Core.LOGGER.warn(
 						"Received a home location, but it is an invalid! Skipping. . ." + exception.getMessage());
 			}
 		});

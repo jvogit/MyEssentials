@@ -4,6 +4,7 @@ import com.gmail.justinxvopro.MyEssentials.Core;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Creeper;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
@@ -32,13 +33,10 @@ public class ExplosionManager implements Listener {
     }
 
     @EventHandler
-    public void onBlockExplosion(final BlockExplodeEvent event) {
-        handleExplosionPhysics(event.blockList(), event.getBlock().getLocation());
-        event.setYield(0f);
-    }
-
-    @EventHandler
     public void onEntityExplosion(final EntityExplodeEvent event) {
+        if (!(event.getEntity() instanceof Creeper)) {
+            return;
+        }
         handleExplosionPhysics(event.blockList(), event.getLocation());
         event.setYield(0f);
     }

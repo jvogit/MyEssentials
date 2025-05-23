@@ -2,21 +2,21 @@ package com.gmail.justinxvopro.MyEssentials.nms;
 
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import org.bukkit.Location;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Consumer;
 
 public class PathFinderWalkToLocation extends Goal {
 	public Mob entity;
-	public Location loc;
-	public boolean arrived;
+	public Vec3 loc;
+	public boolean arrived = false;
 	private Consumer<PathFinderWalkToLocation> consumerArrival;
 
-	public PathFinderWalkToLocation(Mob entity, Location loc) {
-		this(entity, loc, null);
+	public PathFinderWalkToLocation(Mob entity, Vec3 loc) {
+		this(entity, loc, (x) -> {});
 	}
 
-	public PathFinderWalkToLocation(Mob entity, Location loc,
+	public PathFinderWalkToLocation(Mob entity, Vec3 loc,
 			Consumer<PathFinderWalkToLocation> consumerArrival) {
 		this.entity = entity;
 		this.loc = loc;
@@ -30,23 +30,21 @@ public class PathFinderWalkToLocation extends Goal {
 
 	@Override
 	public void tick() {
+		if (entity.getNavigation().isDone())
+		{
+			entity.getNavigation().moveTo(loc.x, loc.y, loc.z, 0.5d);
+		}
 		arrivalCheck();
-		entity.getNavigation().moveTo(loc.getX(), loc.getY(), loc.getZ(), 0.5d);
 	}
 
 	private void arrivalCheck() {
-		double diffX = (loc.getX() - entity.getX());
-		double diffZ = (loc.getZ() - entity.getZ());
-
-		if (diffX < 1 && diffX > -1 && diffZ < 1 && diffZ > -1) {
+		if (this.entity.position().subtract(loc).horizontalDistanceSqr() < 4.f) {
 			if (!arrived) {
-				if (this.consumerArrival != null)
-					this.consumerArrival.accept(this);
+				this.consumerArrival.accept(this);
 				arrived = true;
 			}
 		} else {
 			arrived = false;
 		}
 	}
-
 }
